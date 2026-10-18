@@ -28,7 +28,7 @@ body {
   background-position: 0 0, 16px 16px;
 }
 
-h1, h2, h3, #lema, .caja-titulo, #veredicto, .primario, .secundario, .opciones span, #camara, .inicial, .cuenta {
+h1, h2, h3, #lema, .caja-titulo, #veredicto, #cotillea, .primario, .secundario, .opciones span, #camara, .inicial, .cuenta {
   font-family: var(--fuente-titulos);
 }
 
@@ -41,7 +41,7 @@ h1, h2, h3, #lema, .caja-titulo, #veredicto, .primario, .secundario, .opciones s
   background: var(--rosa);
 }
 #portada .dibujo { position: absolute; top: 8px; right: 6px; width: 120px; }
-@media (min-width: 640px) { #portada { padding: 32px 36px; } #portada .dibujo { width: 210px; top: 14px; right: 24px; } }
+@media (min-width: 640px) { #portada { padding: 28px 32px; } #portada .dibujo { width: 170px; top: 12px; right: 20px; } }
 #titulo-biblioteca, #cifra, #lema, #portada .suave { position: relative; }
 #titulo-biblioteca { max-width: 72%; }
 .titulo-pre { font-size: 1.1rem; font-weight: 500; margin-bottom: 2px; }
@@ -61,11 +61,14 @@ h1, h2, h3, #lema, .caja-titulo, #veredicto, .primario, .secundario, .opciones s
 #escaneado { background: var(--superficie); border-radius: var(--radio); padding: 12px; }
 
 /* Estantería */
+#cotillea { box-shadow: 0 3px 0 var(--borde); }
 .seccion h2 { font-weight: 600; }
 .cuenta { background: var(--superficie); box-shadow: 0 2px 0 var(--borde); font-weight: 500; }
 
 .libro {
-  padding: 10px 10px 14px;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 0;
   border-radius: var(--radio);
   background: var(--superficie);
   box-shadow: 0 3px 0 var(--borde);
@@ -77,7 +80,6 @@ h1, h2, h3, #lema, .caja-titulo, #veredicto, .primario, .secundario, .opciones s
 .libro:nth-child(4n+2) .portada { background: var(--mostaza); }
 .libro:nth-child(4n+3) .portada { background: var(--cielo); }
 .libro:nth-child(4n+4) .portada { background: var(--coral); }
-.editar { box-shadow: 0 1px 3px rgb(47 58 90 / 0.25); }
 
 /* Etiquetas de estado en pastel, con texto oscuro para que se lean bien */
 .estado.en-casa { background: var(--menta); color: #1E5A4C; }

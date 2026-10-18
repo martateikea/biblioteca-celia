@@ -1,12 +1,14 @@
 // Textos de la estética «bebé»: tiernos, pero siempre claros sobre qué hacer.
 const TEXTOS = {
   tituloPre: 'La biblioteca de',
-  // "5 cuentos · 1 que le haría ilusión"
+  // "5 cuentos · 1 en su lista de deseos"
   cifra: (total, deseos) => `${total} ${total === 1 ? 'cuento' : 'cuentos'}`
-    + (deseos ? ` · ${deseos} que le ${deseos === 1 ? 'haría' : 'harían'} ilusión` : ''),
+    + (deseos ? ` · ${deseos} en su lista de deseos` : ''),
   resumen: () => '',
+  cotillea: (peque) => `Ver la estantería${peque ? ` de ${peque}` : ''}`,
+  ocultar: 'Cerrar la estantería',
   estados: { 'En casa': 'Ya vive en casa', 'Reservado': 'Reservado', 'Lista de deseos': 'Lista de deseos ♡' },
-  secciones: { 'Lista de deseos': 'Le haría ilusión', 'En casa': 'Ya vive en casa', 'Reservado': 'Reservados', otros: 'Otros cuentos' },
+  secciones: { 'En casa': 'Ya vive en casa', 'Reservado': 'Reservados', 'Lista de deseos': 'Lista de deseos', otros: 'Otros cuentos' },
   vacia: ['Su estantería está esperando su primer cuento.', 'Búscalo arriba y apúntalo.'],
 
   noLoTiene: ['¡Todavía no lo tiene!', 'Podría ser su próximo cuento favorito.'],

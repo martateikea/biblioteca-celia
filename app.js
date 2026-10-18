@@ -1,7 +1,7 @@
 // Lógica de la web: cargar libros, buscar y pintar resultados.
 
 // Orden de las secciones de la estantería y de los resultados de búsqueda.
-const ORDEN_ESTADOS = ['Lista de deseos', 'En casa', 'Reservado'];
+const ORDEN_ESTADOS = ['En casa', 'Reservado', 'Lista de deseos'];
 const PALABRAS_VACIAS = new Set(['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'de', 'del', 'y', 'a']);
 
 let libros = [];
@@ -64,20 +64,24 @@ function tarjeta(libro) {
       <div class="portada">
         <span class="inicial" aria-hidden="true">${escapar(inicial)}</span>
         ${url ? `<img src="${escapar(url)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
-        ${libro.estado === 'Lista de deseos' ? '' : `<button type="button" class="editar" data-editar="${indice}" aria-label="${escapar(TEXTOS.botonEditar)} «${escapar(libro.titulo)}»">${ICONO_LAPIZ}</button>`}
       </div>
-      <h3>${escapar(libro.titulo)}</h3>
-      ${libro.autor ? `<p class="autor">${escapar(libro.autor)}</p>` : ''}
-      ${libro.nota ? `<p class="nota">${escapar(libro.nota)}</p>` : ''}
-      ${libro.estado ? `<span class="estado ${claseEstado(libro.estado)}">${escapar(TEXTOS.estados[libro.estado] ?? libro.estado)}</span>` : ''}
-      ${libro.estado === 'Lista de deseos' ? `<button type="button" class="primario regalar" data-reservar="${indice}">${escapar(TEXTOS.botonReservar)}</button>` : ''}
+      <div class="datos">
+        <h3>${escapar(libro.titulo)}</h3>
+        ${libro.autor ? `<p class="autor">${escapar(libro.autor)}</p>` : ''}
+        ${libro.nota ? `<p class="nota">${escapar(libro.nota)}</p>` : ''}
+        ${libro.estado ? `<span class="estado ${claseEstado(libro.estado)}">${escapar(TEXTOS.estados[libro.estado] ?? libro.estado)}</span>` : ''}
+        ${libro.estado === 'Lista de deseos' ? `<button type="button" class="primario regalar" data-reservar="${indice}">${escapar(TEXTOS.botonReservar)}</button>` : ''}
+      </div>
+      ${libro.estado === 'Lista de deseos' ? '' : `<button type="button" class="editar" data-editar="${indice}" aria-label="${escapar(TEXTOS.botonEditar)} «${escapar(libro.titulo)}»">${ICONO_LAPIZ}</button>`}
     </li>`;
 }
 
-const rejilla = (lista) => `<ul class="rejilla">${lista.map(tarjeta).join('')}</ul>`;
+const listaLibros = (lista) => `<ul class="lista-libros">${lista.map(tarjeta).join('')}</ul>`;
 const porTitulo = (a, b) => String(a.titulo).localeCompare(String(b.titulo), 'es');
 
-// Sin búsqueda: todos los libros, por secciones.
+// Estantería abierta: todos los libros, por secciones.
+let estanteriaAbierta = false;
+
 function estanteria() {
   if (!libros.length) return `<p class="vacia">${mensaje(TEXTOS.vacia)}</p>`;
   const grupos = ORDEN_ESTADOS.map((estado) => [estado, libros.filter((l) => l.estado === estado)]);
@@ -87,7 +91,7 @@ function estanteria() {
     .map(([estado, lista]) => `
       <section class="seccion">
         <h2>${escapar(TEXTOS.secciones[estado])} <span class="cuenta">${lista.length}</span></h2>
-        ${rejilla([...lista].sort(porTitulo))}
+        ${listaLibros([...lista].sort(porTitulo))}
       </section>`)
     .join('');
 }
@@ -121,7 +125,10 @@ function pintar(forzados) {
 
   $('veredicto').hidden = !consulta;
   $('veredicto').innerHTML = consulta ? veredicto(encontrados) : '';
-  $('resultados').innerHTML = consulta ? rejilla(encontrados) : estanteria();
+  $('cotillea').hidden = Boolean(consulta) || !libros.length;
+  $('cotillea').setAttribute('aria-expanded', estanteriaAbierta);
+  $('cotillea').textContent = estanteriaAbierta ? TEXTOS.ocultar : TEXTOS.cotillea(CONFIG.peque);
+  $('resultados').innerHTML = consulta ? listaLibros(encontrados) : (estanteriaAbierta || !libros.length ? estanteria() : '');
 }
 
 // --- ISBN: buscar por código y, si no está, por el título que dice Google Books ---
@@ -428,6 +435,10 @@ $('consulta').addEventListener('input', () => {
 $('buscador').addEventListener('submit', (e) => {
   e.preventDefault();
   $('consulta').blur(); // cierra el teclado del móvil
+});
+$('cotillea').addEventListener('click', () => {
+  estanteriaAbierta = !estanteriaAbierta;
+  pintar();
 });
 $('camara').addEventListener('click', abrirEscaner);
 $('escaner-cerrar').addEventListener('click', cerrarEscaner);
