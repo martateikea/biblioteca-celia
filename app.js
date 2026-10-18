@@ -140,7 +140,7 @@ function pintar(forzados) {
   const encontrados = (forzados ?? (consulta ? libros.filter((l) => coincide(l, consulta)) : [])).sort(ordenar);
 
   $('veredicto').hidden = !consulta;
-  $('veredicto').innerHTML = consulta ? veredicto(encontrados) : '';
+  $('veredicto').innerHTML = consulta ? veredicto(encontrados) + botonVolver() : '';
   $('cotillea').hidden = Boolean(consulta) || !libros.length;
   $('cotillea').setAttribute('aria-expanded', estanteriaAbierta);
   $('cotillea').textContent = estanteriaAbierta ? TEXTOS.ocultar : TEXTOS.cotillea(CONFIG.peque);
@@ -223,7 +223,7 @@ async function buscarIsbn(isbn) {
   pintar(ficha ? libros.filter((l) => mismoTitulo(l.titulo, ficha.titulo)) : []);
   if (!ficha) {
     // Sin título no podemos asegurar que no lo tenga: puede estar en el Sheet sin ISBN.
-    $('veredicto').innerHTML = mensaje(TEXTOS.desconocido) + botonesAlta();
+    $('veredicto').innerHTML = mensaje(TEXTOS.desconocido) + botonesAlta() + botonVolver();
   }
 }
 
@@ -245,7 +245,8 @@ function recordarNombre(nombre) {
 }
 
 function abrirFormulario(accion, { estado, libro } = {}) {
-  pendiente = { accion, libro };
+  // Si se edita o reserva navegando por la estantería, al guardar seguimos en ella.
+  pendiente = { accion, libro, desdeEstanteria: accion !== 'alta' && !$('consulta').value.trim() };
   $('form').reset();
   $('form-aviso').textContent = '';
   $('form-enviar').disabled = false;
@@ -346,7 +347,14 @@ async function guardarFormulario(evento) {
     }
     if (datos.nombre) recordarNombre(datos.nombre);
     $('formulario').hidden = true;
-    mostrarApuntado(libro, pendiente.accion === 'editar' ? TEXTOS.editado : null);
+    const texto = pendiente.accion === 'editar' ? TEXTOS.editado : null;
+    if (pendiente.desdeEstanteria) {
+      actualizarCifra();
+      pintar();
+      avisar(texto ?? TEXTOS.apuntadoReservado);
+    } else {
+      mostrarApuntado(libro, texto);
+    }
   } catch (error) {
     $('form-enviar').disabled = false;
     $('form-aviso').textContent = error instanceof TypeError
@@ -356,12 +364,35 @@ async function guardarFormulario(evento) {
 }
 
 function mostrarApuntado(libro, texto) {
+  $('aviso-flotante').hidden = true;
   actualizarCifra();
   $('consulta').value = libro.titulo;
   $('escaneado').hidden = true;
   ultimaFicha = null;
   pintar([libro]);
-  $('veredicto').innerHTML = mensaje(texto ?? (libro.estado === 'Reservado' ? TEXTOS.apuntadoReservado : TEXTOS.apuntadoEnCasa));
+  $('veredicto').innerHTML = mensaje(texto ?? (libro.estado === 'Reservado' ? TEXTOS.apuntadoReservado : TEXTOS.apuntadoEnCasa)) + botonVolver();
+}
+
+// Salida siempre visible cuando hay algo en el buscador.
+const botonVolver = () => `<button type="button" class="enlace volver" data-volver>${escapar(TEXTOS.volver)}</button>`;
+
+function volverAEstanteria() {
+  $('consulta').value = '';
+  $('escaneado').hidden = true;
+  ultimaFicha = null;
+  estanteriaAbierta = true;
+  filtro = 'todos';
+  $('aviso-flotante').hidden = true;
+  pintar();
+}
+
+// Aviso breve abajo de la pantalla, que se va solo.
+let temporizadorAviso = null;
+function avisar([titular, explicacion]) {
+  $('aviso-flotante').innerHTML = mensaje([titular, explicacion]);
+  $('aviso-flotante').hidden = false;
+  clearTimeout(temporizadorAviso);
+  temporizadorAviso = setTimeout(() => { $('aviso-flotante').hidden = true; }, 3500);
 }
 
 // --- Escáner con la cámara (la librería se descarga solo al usarlo) ---
@@ -464,6 +495,7 @@ document.addEventListener('click', (evento) => {
   const reserva = evento.target.closest('[data-reservar]');
   const edicion = evento.target.closest('[data-editar]');
   const boton = evento.target.closest('[data-filtro]');
+  if (evento.target.closest('[data-volver]')) volverAEstanteria();
   if (boton) {
     filtro = boton.dataset.filtro;
     pintar();

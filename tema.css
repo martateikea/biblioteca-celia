@@ -59,6 +59,8 @@ h1, h2, h3, #lema, .caja-titulo, #veredicto, #cotillea, .primario, .secundario, 
 #veredicto { box-shadow: 0 3px 0 var(--borde); font-size: 1.1rem; }
 #veredicto small { font-family: var(--fuente); }
 #escaneado { background: var(--superficie); border-radius: var(--radio); padding: 12px; }
+#aviso-flotante { font-family: var(--fuente-titulos); border: 2px solid var(--menta); }
+#aviso-flotante small { font-family: var(--fuente); }
 
 /* Estantería */
 #cotillea { box-shadow: 0 3px 0 var(--borde); }

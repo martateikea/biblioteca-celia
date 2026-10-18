@@ -133,6 +133,24 @@ main {
 .secundario { border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); }
 
 .acciones { margin-top: 12px; }
+#veredicto .volver { display: block; margin-top: 14px; }
+
+#aviso-flotante {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  z-index: 20;
+  width: calc(100% - 32px);
+  max-width: 420px;
+  transform: translateX(-50%);
+  padding: 14px 18px;
+  border-radius: var(--radio);
+  background: var(--superficie);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+  font-weight: 600;
+}
+#aviso-flotante small { display: block; font-weight: 400; color: var(--texto-suave); margin-top: 2px; font-size: 0.95rem; }
+
 #veredicto .enlace {
   margin-top: 10px;
   padding: 0;

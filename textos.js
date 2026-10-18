@@ -11,6 +11,7 @@ const TEXTOS = {
   secciones: { 'En casa': 'Ya vive en casa', 'Reservado': 'Reservados', 'Lista de deseos': 'Lista de deseos', otros: 'Otros cuentos' },
   filtrar: 'Filtrar la estantería',
   todos: 'Todos',
+  volver: '← Ver toda la estantería',
   vacia: ['Su estantería está esperando su primer cuento.', 'Búscalo arriba y apúntalo.'],
 
   noLoTiene: ['¡Todavía no lo tiene!', 'Podría ser su próximo cuento favorito.'],
