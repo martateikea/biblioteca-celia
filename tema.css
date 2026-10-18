@@ -28,7 +28,7 @@ body {
   background-position: 0 0, 16px 16px;
 }
 
-h1, h2, h3, #lema, .caja-titulo, #veredicto, #cotillea, .primario, .secundario, .opciones span, #camara, .inicial, .cuenta {
+h1, h2, h3, #lema, .caja-titulo, #veredicto, #cotillea, .primario, .secundario, .opciones span, #camara, .inicial, .cuenta, .filtro {
   font-family: var(--fuente-titulos);
 }
 
@@ -62,6 +62,9 @@ h1, h2, h3, #lema, .caja-titulo, #veredicto, #cotillea, .primario, .secundario, 
 
 /* Estantería */
 #cotillea { box-shadow: 0 3px 0 var(--borde); }
+.filtro { font-weight: 500; box-shadow: 0 2px 0 var(--borde); }
+.filtro[aria-pressed="true"] { background: var(--rosa); }
+.filtro[aria-pressed="true"] .cuenta { box-shadow: none; }
 .seccion h2 { font-weight: 600; }
 .cuenta { background: var(--superficie); box-shadow: 0 2px 0 var(--borde); font-weight: 500; }
 

@@ -79,15 +79,31 @@ function tarjeta(libro) {
 const listaLibros = (lista) => `<ul class="lista-libros">${lista.map(tarjeta).join('')}</ul>`;
 const porTitulo = (a, b) => String(a.titulo).localeCompare(String(b.titulo), 'es');
 
-// Estantería abierta: todos los libros, por secciones.
+// Estantería abierta: los libros por secciones, con filtros para ir directo a una.
 let estanteriaAbierta = false;
+let filtro = 'todos';
+
+function filtros(grupos) {
+  const boton = (clave, texto, n) => `
+    <button type="button" class="filtro" data-filtro="${escapar(clave)}" aria-pressed="${filtro === clave}">
+      ${escapar(texto)} <span class="cuenta">${n}</span>
+    </button>`;
+  return `
+    <div class="filtros" role="group" aria-label="${escapar(TEXTOS.filtrar)}">
+      ${boton('todos', TEXTOS.todos, libros.length)}
+      ${grupos.map(([estado, lista]) => boton(estado, TEXTOS.secciones[estado], lista.length)).join('')}
+    </div>`;
+}
 
 function estanteria() {
   if (!libros.length) return `<p class="vacia">${mensaje(TEXTOS.vacia)}</p>`;
   const grupos = ORDEN_ESTADOS.map((estado) => [estado, libros.filter((l) => l.estado === estado)]);
   grupos.push(['otros', libros.filter((l) => !ORDEN_ESTADOS.includes(l.estado))]);
-  return grupos
-    .filter(([, lista]) => lista.length)
+  const conLibros = grupos.filter(([, lista]) => lista.length);
+  // Si el filtro elegido se ha quedado vacío (p. ej. tras editar), volvemos a «Todos».
+  if (!conLibros.some(([estado]) => estado === filtro)) filtro = 'todos';
+  return filtros(conLibros) + conLibros
+    .filter(([estado]) => filtro === 'todos' || estado === filtro)
     .map(([estado, lista]) => `
       <section class="seccion">
         <h2>${escapar(TEXTOS.secciones[estado])} <span class="cuenta">${lista.length}</span></h2>
@@ -447,6 +463,11 @@ document.addEventListener('click', (evento) => {
   const alta = evento.target.closest('[data-alta]');
   const reserva = evento.target.closest('[data-reservar]');
   const edicion = evento.target.closest('[data-editar]');
+  const boton = evento.target.closest('[data-filtro]');
+  if (boton) {
+    filtro = boton.dataset.filtro;
+    pintar();
+  }
   if (alta) abrirFormulario('alta', { estado: alta.dataset.alta });
   if (reserva) abrirFormulario('reservar', { libro: libros[reserva.dataset.reservar] });
   if (edicion) abrirFormulario('editar', { libro: libros[edicion.dataset.editar] });
